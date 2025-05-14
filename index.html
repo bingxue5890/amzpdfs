@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Amazon面单扫码助手</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 2em;
+    }
+    input {
+      font-size: 1.2em;
+      padding: 0.5em;
+      width: 80%;
+      max-width: 400px;
+    }
+    button {
+      font-size: 1.2em;
+      padding: 0.5em 1em;
+      margin-top: 1em;
+    }
+    video {
+      width: 100%;
+      max-width: 400px;
+      margin-top: 1em;
+    }
+  </style>
+</head>
+<body>
+  <h1>Amazon面单扫码助手</h1>
+  <p>输入或扫描快递单号，跳转到对应 PDF 文件</p>
+  <input type="text" id="trackingInput" placeholder="例如 TBA123456789" />
+  <br />
+  <button onclick="goToPDF()">打开 PDF</button>
+  <button onclick="startScanner()">📷 启动扫码</button>
+  <video id="video" autoplay muted playsinline style="display:none;"></video>
+  <script src="https://unpkg.com/@zxing/browser@latest"></script>
+  <script>
+    const input = document.getElementById("trackingInput");
+    function goToPDF() {
+      const code = input.value.trim();
+      if (!code) {
+        alert("请输入单号");
+        return;
+      }
+      window.location.href = `https://bingxue5890.github.io/amzpdfs/${code}.pdf`;
+    }
+
+    async function startScanner() {
+      const video = document.getElementById("video");
+      video.style.display = "block";
+      const codeReader = new ZXing.BrowserMultiFormatReader();
+      try {
+        const result = await codeReader.decodeOnceFromVideoDevice(undefined, video);
+        input.value = result.text;
+        goToPDF();
+      } catch (err) {
+        alert("扫码失败: " + err);
+        video.style.display = "none";
+      }
+    }
+  </script>
+</body>
+</html>
